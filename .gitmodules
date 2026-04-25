@@ -1,0 +1,15 @@
+[submodule "3p/magic_enum"]
+	path = 3p/magic_enum
+	url = https://github.com/Neargye/magic_enum.git
+[submodule "3p/googletest"]
+	path = 3p/googletest
+	url = https://github.com/google/googletest.git
+[submodule "3p/yaml-cpp"]
+	path = 3p/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "3p/nlohmann_json"]
+	path = 3p/nlohmann_json
+	url = https://github.com/nlohmann/json.git
+[submodule "3p/date"]
+	path = 3p/date
+	url = https://github.com/HowardHinnant/date.git
