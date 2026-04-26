@@ -286,7 +286,7 @@ auto parse_simple_value(
                            : time_str;
 
         int h = 0, min_v = 0, sec_v = 0;
-        if (std::sscanf(hms_str.c_str(), "%d:%d:%d", &h, &min_v, &sec_v) < 2)
+        if (std::sscanf(hms_str.c_str(), "%d:%d:%d", &h, &min_v, &sec_v) != 3)
             err();
 
         result += hours{h} + minutes{min_v} + seconds{sec_v};
