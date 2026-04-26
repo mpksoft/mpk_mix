@@ -16,6 +16,12 @@ target_link_libraries(mpk_mix_test
         GTest::gtest
         GTest::gtest_main)
 
+# GCC 14 false-positive: inlining vector copy into Checkpoint::sync() at -O2
+# triggers -Warray-bounds / -Wstringop-overflow despite the code being correct.
+# -Wno-error= is needed when a parent project appends -Werror to CMAKE_CXX_FLAGS.
+target_compile_options(mpk_mix_test PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-Wno-array-bounds -Wno-error=array-bounds -Wno-stringop-overflow -Wno-error=stringop-overflow>)
+
 add_executable(mpk_mix_serial_test
     test_serial.cpp
     test_yaml_parse_value.cpp)
@@ -59,6 +65,12 @@ target_link_libraries(mpk_mix_util_test
 
 target_compile_definitions(mpk_mix_util_test PRIVATE
     MPKMIX_LOG_ENGINE=MPKMIX_LOG_NONE)
+
+# GCC 14 false-positive: inlining vector copy into Checkpoint::sync() at -O2
+# triggers -Warray-bounds / -Wstringop-overflow despite the code being correct.
+# -Wno-error= is needed when a parent project appends -Werror to CMAKE_CXX_FLAGS.
+target_compile_options(mpk_mix_util_test PRIVATE
+    $<$<CXX_COMPILER_ID:GNU>:-Wno-array-bounds -Wno-error=array-bounds -Wno-stringop-overflow -Wno-error=stringop-overflow>)
 
 include(GoogleTest)
 gtest_discover_tests(mpk_mix_test)
