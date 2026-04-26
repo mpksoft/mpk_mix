@@ -202,7 +202,7 @@ auto parse_simple_value(
     enum PartType { Date, Time, TimeZone, Invalid };
     auto part_type = Date;
 
-    constexpr size_t none = ~0ull;
+    constexpr size_t none = ~size_t{0};
     size_t date_index = none;
     size_t time_index = none;
     [[maybe_unused]] size_t time_zone_index = none;
