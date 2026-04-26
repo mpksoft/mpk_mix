@@ -178,6 +178,7 @@ inline auto set_log_level(LogLevel log_level) -> void
 
 #elif MPKMIX_LOG_ENGINE == MPKMIX_LOG_CERR
 
+#include <filesystem>
 #include <iostream>
 #include <sstream>
 #include <string>
