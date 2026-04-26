@@ -13,7 +13,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <format>
 #include <functional>
 #include <optional>
 #include <string>
@@ -55,7 +54,7 @@ struct Arg
         if constexpr (std::is_enum_v<T>)
             default_str = magic_enum::enum_name(default_value);
         else
-            default_str = std::format("{}", default_value);
+            default_str = mpk::mix::format("{}", default_value);
         return make_impl(name, dst, std::move(default_str), std::move(description));
     }
 

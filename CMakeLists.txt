@@ -7,6 +7,7 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 option(MPKMIX_BUILD_TESTING "Build test targets" ON)
+option(MPKMIX_ENABLE_TZ "Enable timezone-aware functions (requires C++20 or date lib)" ON)
 
 if(MPKMIX_BUILD_TESTING)
     enable_testing()
@@ -30,6 +31,15 @@ target_compile_features(mpk_mix_headers INTERFACE cxx_std_20)
 add_subdirectory(3p)
 
 target_link_libraries(mpk_mix_headers INTERFACE magic_enum::magic_enum)
+
+if(NOT MPKMIX_COMPILER_HAS_STD_FORMAT)
+    target_compile_definitions(mpk_mix_headers INTERFACE MPKMIX_USE_FMT_POLYFILL)
+    target_link_libraries(mpk_mix_headers INTERFACE fmt::fmt-header-only)
+endif()
+
+if(NOT MPKMIX_ENABLE_TZ)
+    target_compile_definitions(mpk_mix_headers INTERFACE MPKMIX_NO_TZ)
+endif()
 
 # Phase 2 target: compiled value/type/value_path system.
 add_library(mpk_mix_value STATIC

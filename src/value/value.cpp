@@ -24,9 +24,9 @@ public:
         -> std::string
     {
         if constexpr (sizeof(T) == 1)
-            return std::format("{}", v.convert_to<int>());
+            return mpk::mix::format("{}", v.convert_to<int>());
 
-        return std::format("{}", v.as(tag));
+        return mpk::mix::format("{}", v.as(tag));
     }
 
     auto operator()(mpk::mix::Type_Tag<bool> tag, const Value& v) const
@@ -69,7 +69,7 @@ public:
 
     auto operator()(const PathT&, const Value& value) const
         -> std::string
-    { return std::format("{}", value.as<ValuePath>()); }
+    { return mpk::mix::format("{}", value.as<ValuePath>()); }
 
     auto operator()(const ScalarT& t, const Value& value) const
         -> std::string

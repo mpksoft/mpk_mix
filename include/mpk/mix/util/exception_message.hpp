@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include "mpk/mix/detail/format.hpp"
+
 #include <exception>
-#include <format>
 #include <string>
 
 namespace mpk::mix
@@ -24,7 +25,7 @@ inline auto exception_message(std::exception_ptr error) -> std::string
     }
     catch (std::exception& e)
     {
-        return std::format("{}", e.what());
+        return mpk::mix::format("{}", e.what());
     }
     catch (...)
     {

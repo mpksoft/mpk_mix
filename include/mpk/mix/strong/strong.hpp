@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "mpk/mix/detail/format.hpp"
 #include "mpk/mix/macro.hpp"
 #include "mpk/mix/meta/nil.hpp"
 #include "mpk/mix/meta/type.hpp"
@@ -13,7 +14,6 @@
 #include "mpk/mix/strong/fwd.hpp"
 
 #include <cassert>
-#include <format>
 #include <iostream>
 #include <limits>
 #include <type_traits>
@@ -368,11 +368,11 @@ constexpr auto raw(T const& x) noexcept -> typename T::Weak const&
 } // namespace mpk::mix
 
 template <mpk::mix::StrongType T>
-struct std::formatter<T> : std::formatter<typename T::Weak>
+struct MPKMIX_FORMAT_NS::formatter<T> : MPKMIX_FORMAT_NS::formatter<typename T::Weak>
 {
-    auto format(const T& x, std::format_context& ctx) const
+    auto format(const T& x, auto& ctx) const
     {
-        return std::formatter<typename T::Weak>::format(x.v, ctx);
+        return MPKMIX_FORMAT_NS::formatter<typename T::Weak>::format(x.v, ctx);
     }
 };
 

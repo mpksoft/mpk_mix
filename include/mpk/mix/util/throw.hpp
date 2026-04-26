@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <format>
+#include "mpk/mix/detail/format.hpp"
+
 #include <stdexcept>
 #include <utility>
 
@@ -14,14 +15,14 @@ namespace mpk::mix {
 
 template <typename Exception = std::runtime_error, typename... Args>
 [[noreturn]]
-auto throw_(std::format_string<Args...> fmt, Args&&... args) -> void
+auto throw_(MPKMIX_FORMAT_NS::format_string<Args...> fmt, Args&&... args) -> void
 {
-    throw Exception{std::format(fmt, std::forward<Args>(args)...)};
+    throw Exception{mpk::mix::format(fmt, std::forward<Args>(args)...)};
 }
 
 template <typename Exception = std::runtime_error, typename... Args>
 [[nodiscard]]
-auto exception_ptr(std::format_string<Args...> fmt, Args&&... args)
+auto exception_ptr(MPKMIX_FORMAT_NS::format_string<Args...> fmt, Args&&... args)
     -> std::exception_ptr
 {
     try

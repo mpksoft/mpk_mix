@@ -144,7 +144,7 @@ auto ValuePath::operator/=(const ValuePathLike& p2)
 
 } // namespace mpk::mix::value
 
-template <> struct std::formatter<mpk::mix::value::ValuePathView>
+template <> struct MPKMIX_FORMAT_NS::formatter<mpk::mix::value::ValuePathView>
     : mpk::mix::OstreamFormatter<mpk::mix::value::ValuePathView> {};
-template <> struct std::formatter<mpk::mix::value::ValuePath>
+template <> struct MPKMIX_FORMAT_NS::formatter<mpk::mix::value::ValuePath>
     : mpk::mix::OstreamFormatter<mpk::mix::value::ValuePath> {};

@@ -514,5 +514,5 @@ auto visit(const Type* type, F&& f, Args&&... args)
 } // namespace mpk::mix::value
 
 template <>
-struct std::formatter<const mpk::mix::value::Type*>
+struct MPKMIX_FORMAT_NS::formatter<const mpk::mix::value::Type*>
     : mpk::mix::OstreamFormatter<const mpk::mix::value::Type*> {};

@@ -6,6 +6,7 @@
 
 #include "mpk/mix/wrap_c/sock_addr.hpp"
 
+#include "mpk/mix/detail/format.hpp"
 #include "mpk/mix/util/format_sep.hpp"
 
 namespace mpk::mix::wrap_c {
@@ -19,7 +20,7 @@ auto operator<<(std::ostream& s, const SockAddr& addr) -> std::ostream&
 
 auto format_as(SockAddr c) -> std::string
 {
-    return std::format("{}:{}", format_as(c.host), c.port);
+    return mpk::mix::format("{}:{}", format_as(c.host), c.port);
 }
 
 #endif // MPKMIX_LOG_ENGINE == MPKMIX_LOG_QUILL

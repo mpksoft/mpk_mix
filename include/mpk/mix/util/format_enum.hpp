@@ -6,11 +6,10 @@
 
 #pragma once
 
+#include "mpk/mix/detail/format.hpp"
 #include "mpk/mix/meta/enum_type.hpp"
 
 #include <magic_enum/magic_enum.hpp>
-
-#include <format>
 
 
 namespace mpk::mix {
@@ -27,7 +26,7 @@ struct EnumFormatter
     template <typename FormatContext>
     auto format(E const& value, FormatContext& ctx) const
     {
-        return std::format_to(ctx.out(), "{}", magic_enum::enum_name(value));
+        return MPKMIX_FORMAT_NS::format_to(ctx.out(), "{}", magic_enum::enum_name(value));
     }
 };
 
@@ -35,5 +34,5 @@ struct EnumFormatter
 
 
 template <mpk::mix::EnumType E>
-struct std::formatter<E> final : mpk::mix::EnumFormatter<E>
+struct MPKMIX_FORMAT_NS::formatter<E> final : mpk::mix::EnumFormatter<E>
 {};

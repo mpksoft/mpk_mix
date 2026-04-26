@@ -6,8 +6,9 @@
 
 #include "mpk/mix/util/command_line_args.hpp"
 
+#include "mpk/mix/detail/format.hpp"
+
 #include <cassert>
-#include <format>
 #include <iostream>
 #include <numeric>
 #include <regex>
@@ -81,8 +82,8 @@ auto ArgParser::run(ArgParseState& parse_state, bool more_parsers_follow) -> voi
     }
 
     auto set_error =
-        [&]<typename... Args>(std::format_string<Args...> fmt, Args&&... args)
-        -> void { run_error_ = std::format(fmt, std::forward<Args>(args)...); };
+        [&]<typename... Args>(MPKMIX_FORMAT_NS::format_string<Args...> fmt, Args&&... args)
+        -> void { run_error_ = mpk::mix::format(fmt, std::forward<Args>(args)...); };
 
     auto consume_positional = [&](std::string_view arg_str)
     {

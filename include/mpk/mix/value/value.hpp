@@ -179,5 +179,5 @@ using ValueVec = std::vector<Value>;
 } // namespace mpk::mix::value
 
 template <>
-struct std::formatter<mpk::mix::value::Value>
+struct MPKMIX_FORMAT_NS::formatter<mpk::mix::value::Value>
     : mpk::mix::OstreamFormatter<mpk::mix::value::Value> {};

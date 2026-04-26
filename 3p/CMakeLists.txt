@@ -39,6 +39,19 @@ if(MPKMIX_BUILD_TESTING)
         SUBDIR  ${_mpkmix_3p_real_dir}/googletest)
 endif()
 
+# fmt is a polyfill for std::format on compilers without <format> (GCC < 13).
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles(
+    "#include <format>\nint main(){return (int)std::format(\"{}\",1).size();}"
+    MPKMIX_COMPILER_HAS_STD_FORMAT)
+if(NOT MPKMIX_COMPILER_HAS_STD_FORMAT)
+    set(FMT_INSTALL OFF CACHE BOOL "" FORCE)
+    mpkmix_find_or_add(
+        TARGET  fmt::fmt-header-only
+        PACKAGE fmt
+        SUBDIR  ${_mpkmix_3p_real_dir}/fmt)
+endif()
+
 # date is a clang-only dependency: GCC uses std::chrono timezone support natively.
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(BUILD_TZ_LIB ON CACHE BOOL "Build date timezone library" FORCE)

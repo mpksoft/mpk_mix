@@ -6,14 +6,18 @@
 
 #include "mpk/mix/util/time_point.hpp"
 
-#ifdef __clang__
-#include "date/tz.h"
+#ifndef MPKMIX_NO_TZ
+#  ifdef __clang__
+#    include "date/tz.h"
+#  endif
 #endif
 
 #include <chrono>
 #include <sstream>
 
 namespace mpk::mix {
+
+#ifndef MPKMIX_NO_TZ
 
 #ifdef __clang__
 namespace tz = date;
@@ -30,6 +34,8 @@ auto get_time_zone(std::string_view spec) -> tz::time_zone const*
 
 } // anonymous namespace
 
+#endif  // MPKMIX_NO_TZ
+
 auto time_point_to_unix_nano(
     std::chrono::system_clock::time_point const& tp) -> std::int64_t
 {
@@ -37,6 +43,15 @@ auto time_point_to_unix_nano(
                tp.time_since_epoch())
         .count();
 }
+
+auto utc_midnight(std::chrono::system_clock::time_point const& tp)
+    -> std::chrono::system_clock::time_point
+{
+    using namespace std::chrono;
+    return floor<days>(tp);
+}
+
+#ifndef MPKMIX_NO_TZ
 
 template <typename Duration>
 auto time_point_to_readable(
@@ -69,13 +84,6 @@ template auto time_point_to_readable(
     std::string_view,
     Type_Tag<std::chrono::nanoseconds>) -> std::string;
 
-auto utc_midnight(std::chrono::system_clock::time_point const& tp)
-    -> std::chrono::system_clock::time_point
-{
-    using namespace std::chrono;
-    return floor<days>(tp);
-}
-
 auto zoned_midnight(
     std::chrono::system_clock::time_point const& tp,
     std::string_view zone_spec)
@@ -101,5 +109,7 @@ auto from_local_time(
     auto const* zone = get_time_zone(zone_spec);
     return tz::zoned_time{zone, tp_tz}.get_sys_time();
 }
+
+#endif  // MPKMIX_NO_TZ
 
 } // namespace mpk::mix

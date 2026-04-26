@@ -8,8 +8,9 @@
 
 #include "mpk/mix/util/throw.hpp"
 
+#include "mpk/mix/detail/format.hpp"
+
 #include <cassert>
-#include <format>
 #include <iostream>
 #include <random>
 
@@ -36,7 +37,7 @@ ScratchDir::ScratchDir(fs::path const& parent_dir, std::string_view name_prefix)
 
     for (int i = 0; i < 10; ++i)
     {
-        auto subdir_name = std::format("{}_{:04x}", name_prefix, dis(gen));
+        auto subdir_name = mpk::mix::format("{}_{:04x}", name_prefix, dis(gen));
         fs::path unique_dir = temp_dir / subdir_name;
         if (fs::create_directories(unique_dir))
         {

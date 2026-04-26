@@ -334,6 +334,6 @@ auto operator^(const T0& lhs, const T1& rhs) noexcept
 } // namespace mpk::mix
 
 template <mpk::mix::EnumType E>
-struct std::formatter<mpk::mix::EnumFlags<E>> final
+struct MPKMIX_FORMAT_NS::formatter<mpk::mix::EnumFlags<E>> final
     : mpk::mix::OstreamFormatter<mpk::mix::EnumFlags<E>>
 {};

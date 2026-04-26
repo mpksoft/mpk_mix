@@ -174,5 +174,5 @@ auto operator<<(std::ostream& s, const SG& grouped)
 
 
 template <mpk::mix::StrongGroupedType SG>
-struct std::formatter<SG> final : mpk::mix::OstreamFormatter<SG>
+struct MPKMIX_FORMAT_NS::formatter<SG> final : mpk::mix::OstreamFormatter<SG>
 {};

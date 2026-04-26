@@ -93,7 +93,11 @@ auto to_json(T const& value) -> nlohmann::json
     if constexpr (std::same_as<T, std::filesystem::path>)
         return value.string();
     else if constexpr (ChronoTimepointType<T>)
+#ifndef MPKMIX_NO_TZ
         return time_point_to_readable<std::chrono::nanoseconds>(value, "UTC");
+#else
+        return time_point_to_readable<std::chrono::nanoseconds>(value);
+#endif
     else
     {
         std::ostringstream s;

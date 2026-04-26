@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include "mpk/mix/detail/format.hpp"
+
 #include <concepts>
-#include <format>
 #include <ostream>
 #include <sstream>
 
@@ -41,7 +42,7 @@ struct OstreamFormatter
     {
         std::ostringstream s;
         s << value;
-        return std::format_to(ctx.out(), "{}", s.str());
+        return MPKMIX_FORMAT_NS::format_to(ctx.out(), "{}", s.str());
     }
 };
 
@@ -51,5 +52,6 @@ struct OstreamFormatter
 // Must be used at global scope, outside any namespace.
 #define MPKMIX_DECL_OSTREAM_FORMATTER(T)                                    \
     template <>                                                             \
-    struct std::formatter<T> final : ::mpk::mix::OstreamFormatter<T>       \
+    struct MPKMIX_FORMAT_NS::formatter<T> final                             \
+        : ::mpk::mix::OstreamFormatter<T>                                   \
     {}

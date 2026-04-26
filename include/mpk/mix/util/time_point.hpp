@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "mpk/mix/detail/format.hpp"
 #include "mpk/mix/meta/type.hpp"
 
 #include <chrono>
@@ -33,18 +34,20 @@ auto time_point_to_readable(
     std::chrono::system_clock::time_point const& tp, Type_Tag<Duration> = {})
     -> std::string
 {
-    return std::format(
+    return mpk::mix::format(
         "{:%Y-%m-%d %H:%M:%S}", std::chrono::time_point_cast<Duration>(tp));
 }
+
+auto utc_midnight(std::chrono::system_clock::time_point const& tp)
+    -> std::chrono::system_clock::time_point;
+
+#ifndef MPKMIX_NO_TZ
 
 template <typename Duration = std::chrono::microseconds>
 auto time_point_to_readable(
     std::chrono::system_clock::time_point const& tp,
     std::string_view zone_spec,
     Type_Tag<Duration> = {}) -> std::string;
-
-auto utc_midnight(std::chrono::system_clock::time_point const& tp)
-    -> std::chrono::system_clock::time_point;
 
 auto zoned_midnight(
     std::chrono::system_clock::time_point const& tp,
@@ -56,5 +59,7 @@ auto from_local_time(
         std::chrono::system_clock::time_point::duration> tp,
     std::string_view zone_spec = {})
     -> std::chrono::system_clock::time_point;
+
+#endif  // MPKMIX_NO_TZ
 
 } // namespace mpk::mix

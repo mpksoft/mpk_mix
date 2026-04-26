@@ -13,6 +13,7 @@
 #include <cassert>
 #include <charconv>
 #include <cmath>
+#include <cstdio>
 #include <regex>
 #include <sstream>
 #include <type_traits>
@@ -179,6 +180,7 @@ auto parse_simple_value(
             "Invalid date/time specification '{}'", s);
     };
 
+#ifndef MPKMIX_NO_TZ
     auto eof = [&](std::istream& is)
     {
         if (is.eof())
@@ -191,6 +193,7 @@ auto parse_simple_value(
         is.seekg(pos);
         return false;
     };
+#endif
 
     auto parts = split_by_whitespace(s);
     if (parts.size() < 1 || parts.size() > 3)
@@ -202,7 +205,7 @@ auto parse_simple_value(
     constexpr size_t none = ~0ull;
     size_t date_index = none;
     size_t time_index = none;
-    size_t time_zone_index = none;
+    [[maybe_unused]] size_t time_zone_index = none;
 
     constexpr auto npos = std::string_view::npos;
 
@@ -231,6 +234,7 @@ auto parse_simple_value(
         }
     }
 
+#ifndef MPKMIX_NO_TZ
     auto zone_spec = time_zone_index == none ? ""sv : parts[time_zone_index];
 
     if (date_index == none)
@@ -250,28 +254,50 @@ auto parse_simple_value(
             result = from_local_time(local_days{date}, zone_spec);
         }
     }
+#else
+    // Timezone support disabled: interpret all dates as UTC.
+    if (date_index == none)
+        result = utc_midnight(system_clock::now());
+    else
+    {
+        auto date_str = parts[date_index];
+        if (date_str == "today")
+            result = utc_midnight(system_clock::now());
+        else
+        {
+            year_month_day date{};
+            int y, m, d;
+            if (std::sscanf(std::string(date_str).c_str(), "%d-%d-%d", &y, &m, &d) != 3)
+                err();
+            date = year_month_day{
+                year{y}, month{static_cast<unsigned>(m)}, day{static_cast<unsigned>(d)}};
+            result = sys_days{date};
+        }
+    }
+#endif  // MPKMIX_NO_TZ
 
     if (time_index != none)
     {
-        std::istringstream iss(std::string{parts[time_index]});
-        seconds time{};
-        iss >> std::chrono::parse("%H:%M:%S", time);
-        if (iss.fail())
-            err();
-        result += time;
+        // Split on '.' first so we can parse HH:MM:SS and fractional separately.
+        auto time_str = std::string{parts[time_index]};
+        auto dot_pos = time_str.find('.');
+        auto hms_str = dot_pos != std::string::npos
+                           ? time_str.substr(0, dot_pos)
+                           : time_str;
 
-        if (eof(iss))
+        int h = 0, min_v = 0, sec_v = 0;
+        if (std::sscanf(hms_str.c_str(), "%d:%d:%d", &h, &min_v, &sec_v) < 2)
+            err();
+
+        result += hours{h} + minutes{min_v} + seconds{sec_v};
+
+        if (dot_pos == std::string::npos)
             return;
-        if (iss.peek() != '.')
-            err();
 
-        iss.ignore();
-        std::string fractional_part_str;
-        iss >> fractional_part_str;
-        if (iss.fail() || fractional_part_str.empty()
+        auto fractional_part_str = time_str.substr(dot_pos + 1);
+        if (fractional_part_str.empty()
             || fractional_part_str.length() > 9
-            || !std::ranges::all_of(fractional_part_str, ::isdigit)
-            || !eof(iss))
+            || !std::ranges::all_of(fractional_part_str, ::isdigit))
         {
             err();
         }
