@@ -18,6 +18,7 @@
 #include <ostream>
 #include <span>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 
@@ -173,6 +174,13 @@ auto operator<<(std::ostream& s, const SG& grouped)
 } // namespace mpk::mix
 
 
-template <mpk::mix::StrongGroupedType SG>
-struct MPKMIX_FORMAT_NS::formatter<SG> final : mpk::mix::OstreamFormatter<SG>
+#ifdef MPKMIX_USE_FMT_POLYFILL
+template <typename SG>
+struct fmt::formatter<SG, char, std::enable_if_t<mpk::mix::StrongGroupedType<SG>>>
+    final : mpk::mix::OstreamFormatter<SG>
 {};
+#else
+template <mpk::mix::StrongGroupedType SG>
+struct std::formatter<SG> final : mpk::mix::OstreamFormatter<SG>
+{};
+#endif

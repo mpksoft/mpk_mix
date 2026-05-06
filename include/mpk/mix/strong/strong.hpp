@@ -367,14 +367,32 @@ constexpr auto raw(T const& x) noexcept -> typename T::Weak const&
 
 } // namespace mpk::mix
 
-template <mpk::mix::StrongType T>
-struct MPKMIX_FORMAT_NS::formatter<T> : MPKMIX_FORMAT_NS::formatter<typename T::Weak>
+// GCC 11 incorrectly treats two concept-constrained partial specialisations of
+// the same template in the same TU as a redefinition (bug fixed in GCC 12).
+// When using the fmt polyfill (cross-compilation with GCC 11), use SFINAE via
+// fmt::formatter's third Enable parameter instead of a concept constraint, so
+// that the two specialisations are distinguished by SFINAE rather than by
+// concept subsumption.
+#ifdef MPKMIX_USE_FMT_POLYFILL
+template <typename T>
+struct fmt::formatter<T, char, std::enable_if_t<mpk::mix::StrongType<T>>>
+    : fmt::formatter<typename T::Weak>
 {
     auto format(const T& x, auto& ctx) const
     {
-        return MPKMIX_FORMAT_NS::formatter<typename T::Weak>::format(x.v, ctx);
+        return fmt::formatter<typename T::Weak>::format(x.v, ctx);
     }
 };
+#else
+template <mpk::mix::StrongType T>
+struct std::formatter<T> : std::formatter<typename T::Weak>
+{
+    auto format(const T& x, auto& ctx) const
+    {
+        return std::formatter<typename T::Weak>::format(x.v, ctx);
+    }
+};
+#endif
 
 #define MPKMIX_STRONG_TYPE(Name, Weak_, ...)                        \
     struct Name##_StrongTraits final                                \
