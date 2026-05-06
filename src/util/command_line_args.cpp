@@ -26,7 +26,7 @@ auto Arg::parse_name(std::string_view name)
 {
     if (name.empty())
         throw_<std::invalid_argument>("Empty argument names are not allowed");
-    auto rx = std::regex("^(--)?(\\w+)(,-[a-zA-Z])?$");
+    auto rx = std::regex("^(--)?([\\w][\\w-]*)(,-[a-zA-Z])?$");
     auto const name_str = std::string{name};
     auto first_match_it =
         std::sregex_iterator(name_str.begin(), name_str.end(), rx);
