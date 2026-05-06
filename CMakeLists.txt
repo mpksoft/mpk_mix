@@ -66,6 +66,7 @@ add_library(mpk_mix_serial STATIC
     src/serial/parse_simple_value.cpp
     src/serial/yaml/parse.cpp
     src/serial/yaml/parse_value.cpp
+    src/serial/yaml/to_yaml.cpp
     src/serial/json/parse.cpp
     src/serial/json/from_file.cpp)
 add_library(mpk_mix::serial ALIAS mpk_mix_serial)
