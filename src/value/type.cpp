@@ -442,4 +442,8 @@ auto operator<<(std::ostream& s, const Type* t)
     return s;
 }
 
+auto operator<<(std::ostream& s, const Type& t)
+    -> std::ostream&
+{ return s << &t; }
+
 } // namespace mpk::mix::value

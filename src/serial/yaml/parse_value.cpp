@@ -47,7 +47,7 @@ struct YamlValueParser final
             throw_(
                 "YamlValueParser: Failed to parse value of type {} because "
                 "actual array size {} differs from expected size {}",
-                t.type(),
+                *t.type(),
                 node.size(),
                 value.size());
 
@@ -72,7 +72,7 @@ struct YamlValueParser final
         throw_(
             "YamlValueParser: Failed to parse value of type {} because custom "
             "types are not supported",
-            t.type());
+            *t.type());
     }
 
     auto operator()(const EnumT& t, Value& value, const YAML::Node& node) const
@@ -126,13 +126,13 @@ struct YamlValueParser final
                 throw_(
                     "YamlValueParser: Failed to parse value of type {} - if "
                     "specified as a scalar, only 'all' is recognized",
-                    t.type());
+                    *t.type());
         }
         else
             throw_(
                 "YamlValueParser: Failed to parse value of type {} - node is "
                 "neither an array nor a scalar",
-                t.type());
+                *t.type());
     }
 
     auto operator()(
@@ -178,7 +178,7 @@ struct YamlValueParser final
             throw_(
                 "YamlValueParser: Failed to parse value of type {} because of "
                 "tuple size mismatch",
-                t.type());
+                *t.type());
 
         for (const auto& key: keys)
         {

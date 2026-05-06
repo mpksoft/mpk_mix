@@ -35,20 +35,20 @@ auto parse_as_decimal(
         throw_(
             "parse_simple_value: Failed to parse scalar of type {} from "
             "string '{}' - not a number",
-            type_of<T>(),
+            *type_of<T>(),
             s);
     else if (r.ec == std::errc::result_out_of_range)
         throw_(
             "parse_simple_value: Failed to parse scalar of type {} from "
             "string '{}' - out of range",
-            type_of<T>(),
+            *type_of<T>(),
             s);
     assert(r.ec == std::error_code{});
     if (r.ptr != s.end())
         throw_(
             "parse_simple_value: Failed to parse scalar of type {} from "
             "string '{}' - extra characters remain",
-            type_of<T>(),
+            *type_of<T>(),
             s);
 
     return result;
@@ -104,7 +104,7 @@ struct SimpleValueParser final
         throw_(
             "parse_simple_value: Failed to parse value of type {} because "
             "array types are not supported",
-            t.type());
+            *t.type());
     }
 
     auto operator()(const CustomT& t, std::string_view) const -> Value
@@ -112,7 +112,7 @@ struct SimpleValueParser final
         throw_(
             "parse_simple_value: Failed to parse value of type {} because "
             "custom types are not supported",
-            t.type());
+            *t.type());
     }
 
     auto operator()(const EnumT& t, std::string_view text) const -> Value
@@ -143,7 +143,7 @@ struct SimpleValueParser final
         throw_(
             "parse_simple_value: Failed to parse value of type {} because "
             "set types are not supported",
-            t.type());
+            *t.type());
     }
 
     auto operator()(const StrongT& t, std::string_view text) const -> Value
@@ -159,7 +159,7 @@ struct SimpleValueParser final
         throw_(
             "parse_simple_value: Failed to parse value of type {} because "
             "struct types are not supported",
-            t.type());
+            *t.type());
     }
 
     auto operator()(const TupleT& t, std::string_view) const -> Value
@@ -167,7 +167,7 @@ struct SimpleValueParser final
         throw_(
             "parse_simple_value: Failed to parse value of type {} because "
             "tuple types are not supported",
-            t.type());
+            *t.type());
     }
 
     auto operator()(const VectorT& t, std::string_view) const -> Value
@@ -175,7 +175,7 @@ struct SimpleValueParser final
         throw_(
             "parse_simple_value: Failed to parse value of type {} because "
             "vector types are not supported",
-            t.type());
+            *t.type());
     }
 };
 

@@ -227,6 +227,9 @@ public:
     friend auto operator<<(std::ostream& s, const Type* t)
         -> std::ostream&;
 
+    friend auto operator<<(std::ostream& s, const Type& t)
+        -> std::ostream&;
+
 private:
 
     alignas(size_t) Storage storage_;
@@ -513,6 +516,4 @@ auto visit(const Type* type, F&& f, Args&&... args)
 
 } // namespace mpk::mix::value
 
-template <>
-struct MPKMIX_FORMAT_NS::formatter<const mpk::mix::value::Type*>
-    : mpk::mix::OstreamFormatter<const mpk::mix::value::Type*> {};
+MPKMIX_DECL_OSTREAM_FORMATTER(mpk::mix::value::Type);

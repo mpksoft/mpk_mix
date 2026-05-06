@@ -140,7 +140,7 @@ public:
         if(type_->aggregate_type() != AggregateType::Scalar)
             mpk::mix::throw_<std::invalid_argument>(
                 "Value::convert_to: Expected a scalar argument, got {}",
-                type_);
+                *type_);
 
         return
             ScalarT(type_).visit_numeric(
@@ -155,7 +155,7 @@ public:
         if(type_->aggregate_type() != AggregateType::String)
             mpk::mix::throw_<std::invalid_argument>(
                 "Value::convert_to: Expected a string argument, got {}",
-                type_);
+                *type_);
 
         return
             StringT(type_).visit(
