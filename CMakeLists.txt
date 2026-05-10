@@ -106,7 +106,9 @@ target_compile_definitions(mpk_mix_wrap_c PRIVATE
 add_library(mpk_mix_util STATIC
     src/util/scratch_dir.cpp
     src/util/command_line_args.cpp
-    src/util/signal_handler.cpp)
+    src/util/signal_handler.cpp
+    src/util/stacktrace.cpp
+    src/util/install_crash_handlers.cpp)
 add_library(mpk_mix::util ALIAS mpk_mix_util)
 target_link_libraries(mpk_mix_util
     PUBLIC
@@ -114,6 +116,56 @@ target_link_libraries(mpk_mix_util
         mpk_mix::serial)
 target_compile_definitions(mpk_mix_util PRIVATE
     MPKMIX_LOG_ENGINE=MPKMIX_LOG_NONE)
+
+# Stack-trace support (C++23 <stacktrace>). Off by default for cross builds
+# (GCC 11 musl toolchains have no <stacktrace>), on otherwise — but probed,
+# so a host without the right libstdc++ also gets it auto-disabled.
+if(CMAKE_CROSSCOMPILING)
+    set(_mpkmix_stacktrace_default OFF)
+else()
+    set(_mpkmix_stacktrace_default ON)
+endif()
+option(MPKMIX_STACKTRACE
+    "Capture stack traces at exception throw, terminate, and fatal signals"
+    ${_mpkmix_stacktrace_default})
+
+if(MPKMIX_STACKTRACE)
+    include(CheckCXXSourceCompiles)
+    set(_mpkmix_st_save_flags "${CMAKE_REQUIRED_FLAGS}")
+    set(_mpkmix_st_save_libs  "${CMAKE_REQUIRED_LIBRARIES}")
+    set(CMAKE_REQUIRED_FLAGS "-std=c++23")
+
+    set(_mpkmix_st_lib "")
+    foreach(_cand stdc++exp stdc++_libbacktrace)
+        set(CMAKE_REQUIRED_LIBRARIES "${_cand};${CMAKE_DL_LIBS}")
+        check_cxx_source_compiles(
+            "#include <stacktrace>\nint main(){auto s=std::stacktrace::current();return (int)s.size();}"
+            MPKMIX_STACKTRACE_HAS_${_cand})
+        if(MPKMIX_STACKTRACE_HAS_${_cand})
+            set(_mpkmix_st_lib "${_cand}")
+            break()
+        endif()
+    endforeach()
+
+    set(CMAKE_REQUIRED_FLAGS     "${_mpkmix_st_save_flags}")
+    set(CMAKE_REQUIRED_LIBRARIES "${_mpkmix_st_save_libs}")
+
+    if(_mpkmix_st_lib STREQUAL "")
+        message(WARNING
+            "MPKMIX_STACKTRACE requested but <stacktrace> is unusable with this "
+            "toolchain; disabling.")
+        set(MPKMIX_STACKTRACE OFF CACHE BOOL "" FORCE)
+    else()
+        message(STATUS "mpk_mix: stacktrace enabled (linking against ${_mpkmix_st_lib})")
+        # The two stacktrace TUs need C++23.
+        set_source_files_properties(
+            src/util/stacktrace.cpp
+            src/util/install_crash_handlers.cpp
+            PROPERTIES COMPILE_OPTIONS "-std=c++23")
+        target_compile_definitions(mpk_mix_util PUBLIC MPKMIX_STACKTRACE)
+        target_link_libraries(mpk_mix_util PUBLIC ${_mpkmix_st_lib} ${CMAKE_DL_LIBS})
+    endif()
+endif()
 
 if(MPKMIX_BUILD_TESTING)
     add_subdirectory(test)
